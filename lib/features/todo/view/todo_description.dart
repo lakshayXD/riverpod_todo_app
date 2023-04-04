@@ -33,37 +33,41 @@ class TodoDescription extends ConsumerWidget {
                         title: _titleController.text,
                         description: _descriptionController.text);
                     ref.read(todosProvider.notifier).add(todo);
+                    Navigator.of(context).pop();
                   },
                   child: const Text('Save')),
             ],
           ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                decoration: const InputDecoration(
-                  hintText: 'ToDo',
-                ),
-                style: Theme.of(context).textTheme.bodyLarge,
-                controller: _titleController,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Divider(),
-              const SizedBox(
-                height: 20,
-              ),
-              SingleChildScrollView(
-                child: TextField(
+          body: Padding(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextField(
                   decoration: const InputDecoration(
-                    hintText: 'ToDo',
+                    hintText: 'Title',
                   ),
-                  controller: _descriptionController,
-                  maxLength: 500,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  controller: _titleController,
                 ),
-              ),
-            ],
+                const SizedBox(
+                  height: 20,
+                ),
+                const Divider(),
+                const SizedBox(
+                  height: 20,
+                ),
+                SingleChildScrollView(
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      hintText: 'Todo Description',
+                    ),
+                    controller: _descriptionController,
+                    maxLength: 500,
+                  ),
+                ),
+              ],
+            ),
           )),
     );
   }

@@ -20,28 +20,30 @@ class _TodoCardState extends State<TodoCard> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.onPressed,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white60, width: 0.7),
-        ),
-        child: Row(
-          children: [
-            Checkbox(value: widget.isChecked, onChanged: widget.onChanged, checkColor: Colors.white,),
-            const SizedBox(width: 15,),
-            Text(
-              widget.todoTitle,
-              style: Theme
-                .of(context)
-                .textTheme
-                .bodyMedium,
-              overflow: TextOverflow.ellipsis,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white60, width: 0.7),
+      ),
+      child: Row(
+        children: [
+          Checkbox(value: widget.isChecked, onChanged: widget.onChanged, checkColor: Colors.white, activeColor: Colors.redAccent,),
+          const SizedBox(width: 15,),
+          GestureDetector(
+            onTap: widget.onPressed,
+            child: SizedBox(
+              child: Text(
+                widget.todoTitle,
+                style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyMedium,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

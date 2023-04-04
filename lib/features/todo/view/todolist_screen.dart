@@ -3,18 +3,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod__demo/features/todo/model/todo.dart';
 import 'package:riverpod__demo/features/todo/provider/todo_notifier.dart';
 import 'package:riverpod__demo/features/todo/view/todo_description.dart';
+import 'package:riverpod__demo/features/todo/view/todo_screen.dart';
 import 'package:riverpod__demo/features/todo/widget/todo_card.dart';
 
-class TodoListScreen extends ConsumerWidget {
+//stateprovider to keep track of all the selected Todos
+final selectedTodoProvider = StateProvider<List<int>>((ref) => <int>[]);
+
+class TodoListScreen extends ConsumerStatefulWidget {
   static const id = 'TodoListScreen';
 
-  TodoListScreen({Key? key}) : super(key: key);
-
-  //stateprovider to keep track of all the selected Todos
-  final selectedTodoProvider = StateProvider<List<int>>((ref) => <int>[]);
+  const TodoListScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  TodoListScreenState createState() => TodoListScreenState();
+}
+
+class TodoListScreenState extends ConsumerState<TodoListScreen> {
+
+  List<int> selectedIndexList = [];
+
+  @override
+  Widget build(BuildContext context) {
     // rebuild the widget when the todolist changes
     List<Todo> todoList = ref.watch(todosProvider);
 
@@ -33,26 +42,50 @@ class TodoListScreen extends ConsumerWidget {
                   List<int> selectedTodos =
                       ref.read(selectedTodoProvider.notifier).state;
                   ref.read(todosProvider.notifier).remove(selectedTodos);
+
+                  ref.read(selectedTodoProvider.notifier).update((state) => state = []);
+                  setState(() {
+                    selectedIndexList = [];
+                  });
                 },
                 child: const Text('Delete'))
           ],
         ),
-        body: Container(
+        body: (todoList.isEmpty) ? const Center(child: Text('No Item Found!'),) : Container(
             padding: const EdgeInsets.all(15),
             child: ListView.builder(
               itemCount: todoList.length,
               itemBuilder: (context, index) {
                 return TodoCard(
                     onPressed: () {
-                      Navigator.pushNamed(context, TodoListScreen.id, arguments: {'todo': todoList[index]});
+                      Navigator.pushNamed(context, TodoScreen.id, arguments: {'todo': todoList[index]});
                     },
-                    isChecked: false,
+                    isChecked: selectedIndexList.contains(index),
                     onChanged: (val) {
-                      ref.read(selectedTodoProvider.notifier).update((state) {
-                        state = [...state, todoList[index].id];
-                        return state;
-                      });
-                    },
+                      if(val){
+                            ref
+                                .read(selectedTodoProvider.notifier)
+                                .update((state) {
+                              state = [...state, todoList[index].id];
+                              return state;
+                            });
+                            setState(() {
+                              selectedIndexList.add(index);
+                            });
+                          }
+                      else{
+                        ref.read(selectedTodoProvider.notifier).update((state){
+                          state = [
+                            for(final i in state)
+                              if(i != todoList[index].id) i
+                          ];
+                          return state;
+                        });
+                        setState(() {
+                          selectedIndexList.remove(index);
+                        });
+                      }
+                        },
                     todoTitle: todoList[index].title);
               },
             )),
